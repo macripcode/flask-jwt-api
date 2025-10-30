@@ -1,45 +1,13 @@
-# Flask JWT API (Users + Products) — Docker Ready
+Product Catalog API
 
-API base para un mini CMS con **Usuarios**, **JWT** y **Productos** (compatible con React Admin). Lista para Docker.
+Description:
+API for managing a product catalog built with Flask, JWT authentication, and Docker.
+Provides secure user authentication and CRUD operations for products.
 
-## Arranque rápido (dev)
-```bash
-docker compose up --build
-# o make up
-```
-- API: http://localhost:5000
-- Login: POST `/auth/login` → `{ "email":"admin@local","password":"admin" }` (si SEED_ADMIN=1)
-- Productos: todas las rutas con JWT (Authorization: Bearer <token>)
+Tech Stack
 
-## Endpoints
-- `POST /auth/login` → `{ "access": "<JWT>" }`
-- `GET /products?_start=0&_end=10` (header `X-Total-Count`)
-- `GET /products/<id>`
-- `POST /products`
-- `PUT /products/<id>`
-- `DELETE /products/<id>`
+Flask – Python web framework for the API
+JWT (Flask-JWT-Extended) – Token-based authentication
+Docker – Containerization for easy deployment
 
-## Variables de entorno
-Ver `.env.example`.
-Para prod usa MySQL/RDS cambiando `SQLALCHEMY_DATABASE_URI`.
 
-## Estructura
-```
-api/
-  app.py
-  wsgi.py
-  config.py
-  extensions.py
-  models/
-    __init__.py
-    user.py
-    product.py
-  api/
-    __init__.py
-    auth.py
-    products.py
-  utils/
-    __init__.py
-    errors.py
-    pagination.py
-```
