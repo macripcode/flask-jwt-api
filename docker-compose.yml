@@ -1,0 +1,12 @@
+services:
+  api:
+    container_name: flask-jwt-api
+    build: .
+    ports:
+      - "5001:5000"
+    env_file: .env
+    volumes:
+      - dbdata:/app/instance
+    restart: always
+volumes:
+  dbdata:
