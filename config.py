@@ -1,4 +1,19 @@
 import os
+from urllib.parse import quote_plus
+
+def _build_uri():
+    uri = os.getenv("SQLALCHEMY_DATABASE_URI")
+    if uri:
+        return uri
+
+    engine = os.getenv("DB_ENGINE", "mysql+pymysql")
+    user = os.getenv("DB_USER", "admin")
+    password = quote_plus(os.getenv("DB_PASSWORD", ""))
+    host = os.getenv("DB_HOST", "localhost")
+    port = os.getenv("DB_PORT", "3306")
+    name = os.getenv("DB_NAME", "flaskenv")
+
+    return f"{engine}://{user}:{password}@{host}:{port}/{name}"
 
 class Base:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -7,11 +22,13 @@ class Base:
     PROPAGATE_EXCEPTIONS = True
 
 class Dev(Base):
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", "sqlite:///instance/app.db")
+    SQLALCHEMY_DATABASE_URI = _build_uri() or "sqlite:///instance/app.db"
+
 
 class Prod(Base):
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    SQLALCHEMY_DATABASE_URI = _build_uri()
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
+
 
 def get_config(env: str):
     return {"development": Dev, "production": Prod}.get(env, Dev)
