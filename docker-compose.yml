@@ -1,12 +1,13 @@
 services:
   api:
     container_name: flask-jwt-api
-    image: docker.io/macripco/flask-jwt-api-starter-api:latest
+    build: .
+    image: macripco/flask-jwt-api-starter-api:latest
     ports:
-      - "5001:5000"          # host:container
+      - "5001:5000"
     env_file: .env
     volumes:
-      - dbdata:/app/instance # datos locales de Flask
+      - dbdata:/app/instance
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
