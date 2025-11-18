@@ -15,11 +15,16 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ec2
+          printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ec2
           chmod 600 ~/.ssh/id_ec2
 
-          printf "Host ec2\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/id_ec2\n  StrictHostKeyChecking no\n" \
-            "${{ secrets.EC2_HOST }}" "${{ secrets.EC2_USER }}" > ~/.ssh/config
+          cat << EOF > ~/.ssh/config
+          Host ec2
+            HostName ${{ secrets.EC2_HOST }}
+            User ${{ secrets.EC2_USER }}
+            IdentityFile ~/.ssh/id_ec2
+            StrictHostKeyChecking no
+          EOF
 
       - name: Deploy code to EC2
         run: |
