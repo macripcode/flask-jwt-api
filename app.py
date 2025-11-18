@@ -5,6 +5,7 @@ from extensions import db, jwt, cors
 from utils.errors import register_error_handlers
 from api.auth import bp as auth_bp
 from api.products import bp as products_bp
+from api.status import bp as status_bp
 from models.user import User
 from models.product import Product
 
@@ -22,6 +23,7 @@ def create_app(env: str | None = None):
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(products_bp, url_prefix="/products")
+    app.register_blueprint(status_bp)
 
     register_error_handlers(app)
 
