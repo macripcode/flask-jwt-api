@@ -6,7 +6,13 @@ def _build_uri():
     if uri:
         return uri
 
-    engine = os.getenv("DB_ENGINE", "mysql+pymysql")
+    engine = os.getenv("DB_ENGINE")
+
+ 
+    if not engine or engine == "sqlite":
+        name = os.getenv("DB_NAME", "sqlite.db")
+        return f"sqlite:///{name}"
+
     user = os.getenv("DB_USER", "admin")
     password = quote_plus(os.getenv("DB_PASSWORD", ""))
     host = os.getenv("DB_HOST", "localhost")
@@ -22,13 +28,11 @@ class Base:
     PROPAGATE_EXCEPTIONS = True
 
 class Dev(Base):
-    SQLALCHEMY_DATABASE_URI = _build_uri() or "sqlite:///instance/app.db"
-
+    SQLALCHEMY_DATABASE_URI = _build_uri()
 
 class Prod(Base):
     SQLALCHEMY_DATABASE_URI = _build_uri()
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*")
-
 
 def get_config(env: str):
     return {"development": Dev, "production": Prod}.get(env, Dev)
