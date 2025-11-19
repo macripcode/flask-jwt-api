@@ -28,7 +28,8 @@ def create_app(env: str | None = None):
     register_error_handlers(app)
 
     with app.app_context():
-        os.makedirs("/app/instance", exist_ok=True)
+        instance_path = os.path.join(app.root_path, "instance")
+        os.makedirs(instance_path, exist_ok=True)
         db.create_all()
         if os.getenv("SEED_ADMIN") == "1":
             email = os.getenv("ADMIN_EMAIL", "admin@local")
