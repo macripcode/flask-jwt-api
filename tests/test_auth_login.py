@@ -3,7 +3,7 @@ from models.user import User
 from extensions import db
 
 # ------------------------------------
-# Helper: crear usuario de prueba
+# Helper: Create a test user
 # ------------------------------------
 def create_test_user(email="test@example.com", password="123456"):
     user = User(email=email)
@@ -14,7 +14,7 @@ def create_test_user(email="test@example.com", password="123456"):
 
 
 # ------------------------------------
-# TEST 1: email requerido
+# TEST 1: email required
 # ------------------------------------
 def test_login_missing_email(client):
     response = client.post("/auth/login", json={
@@ -25,7 +25,7 @@ def test_login_missing_email(client):
 
 
 # ------------------------------------
-# TEST 2: usuario inexistente
+# TEST 2: user not found
 # ------------------------------------
 def test_login_user_not_found(client):
     response = client.post("/auth/login", json={
@@ -37,7 +37,7 @@ def test_login_user_not_found(client):
 
 
 # ------------------------------------
-# TEST 3: contraseña incorrecta
+# TEST 3: wrong password
 # ------------------------------------
 def test_login_wrong_password(client):
     create_test_user(email="cami@example.com", password="abcdef")
@@ -52,7 +52,7 @@ def test_login_wrong_password(client):
 
 
 # ------------------------------------
-# TEST 4: login correcto (JWT devuelto)
+# TEST 4: login success (JWT returned)
 # ------------------------------------
 def test_login_success(client):
     create_test_user(email="macripco@example.com", password="mypass")
