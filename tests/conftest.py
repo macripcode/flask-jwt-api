@@ -11,6 +11,7 @@ def app():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
         "WTF_CSRF_ENABLED": False,
+        "SEED_ADMIN": "0",
     })
 
     with app.app_context():

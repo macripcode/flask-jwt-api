@@ -32,7 +32,7 @@ def create_app(env: str | None = None):
         os.makedirs(instance_path, exist_ok=True)
         
         db.create_all()
-        if os.getenv("SEED_ADMIN") == "1":
+        if app.config.get("TESTING") is not True and os.getenv("SEED_ADMIN") == "1":
             email = os.getenv("ADMIN_EMAIL", "admin@local")
             pwd = os.getenv("ADMIN_PASSWORD", "admin")
             try:
