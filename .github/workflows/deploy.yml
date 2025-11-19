@@ -23,6 +23,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Show repo structure
+        run: |
+          pwd
+          echo "== ls =="
+          ls
+          echo "== ls tests =="
+          ls tests || echo "tests directory NOT FOUND"
+
       - name: Run tests with pytest
         env:
           FLASK_ENV: development
@@ -30,8 +38,8 @@ jobs:
           DB_NAME: test.db
           JWT_SECRET_KEY: testing-secret
         run: |
-          pytest --maxfail=1 --disable-warnings --tb=short
-
+          pytest tests --maxfail=1 --disable-warnings --tb=short -vv
+        
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
