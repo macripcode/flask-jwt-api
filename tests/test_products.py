@@ -22,11 +22,12 @@ def create_user_and_token(app, email="test@example.com", password="123456"):
 # ---------------------------------
 # Helper: create product
 # ---------------------------------
-def create_product(name="Laptop", price=999.99, stock=10):
-    p = Product(name=name, price=price, stock=stock)
+def create_product(name="Laptop", price=999.99, stock=10, category=None):
+    p = Product(name=name, price=price, stock=stock, category=category)
     db.session.add(p)
     db.session.commit()
     return p
+
 
 
 # ---------------------------------
@@ -149,3 +150,66 @@ def test_delete_product(client, app):
     # Ensure product no longer exists
     with app.app_context():
         assert Product.query.get(p.id) is None
+        
+# ---------------------------------
+# TEST 8: Search by name
+# ---------------------------------
+def test_search_by_name(client, app):
+    token = create_user_and_token(app)
+    create_product("Blue Chair", 50.0, 5, "chairs")
+    create_product("Red Sofa", 200.0, 2, "sofas")
+
+    resp = client.get(
+        "/products/search?q=chair",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert len(data) == 1
+    assert data[0]["name"] == "Blue Chair"
+
+
+# ---------------------------------
+# TEST 9: Search by category
+# ---------------------------------
+def test_search_by_category(client, app):
+    token = create_user_and_token(app)
+    create_product("Blue Chair", 50.0, 5, "chairs")
+    create_product("Red Chair", 60.0, 3, "chairs")
+    create_product("Green Sofa", 200.0, 2, "sofas")
+
+    resp = client.get(
+        "/products/search?category=chairs",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert len(data) == 2
+    names = {p["name"] for p in data}
+    assert {"Blue Chair", "Red Chair"} == names
+
+
+# ---------------------------------
+# TEST 10: List categories
+# ---------------------------------
+def test_categories_endpoint(client, app):
+    token = create_user_and_token(app)
+    create_product("Blue Chair", 50.0, 5, "chairs")
+    create_product("Red Chair", 60.0, 3, "chairs")
+    create_product("Green Sofa", 200.0, 2, "sofas")
+
+    resp = client.get(
+        "/products/categories",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert resp.status_code == 200
+    data = resp.get_json()
+    # Example: [{"name": "chairs", "count": 2}, {"name": "sofas", "count": 1}]
+    names = {c["name"] for c in data}
+    assert {"chairs", "sofas"}.issubset(names)
+
+    chairs = next(c for c in data if c["name"] == "chairs")
+    assert chairs["count"] == 2
